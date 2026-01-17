@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linear Regression Demystified: From First Principles to Implementation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 0.5rem;
+            margin: 2rem 0 1rem 0;
+        }
+        
+        h3 {
+            color: #2980b9;
+            margin: 1.5rem 0 0.8rem 0;
+        }
+        
+        section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+        
+        .motivation-example {
+            border-left: 5px solid #e74c3c;
+        }
+        
+        .math-tools {
+            border-left: 5px solid #2ecc71;
+        }
+        
+        .interactive-app {
+            border-left: 5px solid #f39c12;
+        }
+        
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        label {
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        input, select {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        button {
+            padding: 0.7rem 1.2rem;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .visualization-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+        
+        .plot-area {
+            flex: 1;
+            min-width: 300px;
+            height: 400px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .calculations {
+            flex: 1;
+            min-width: 300px;
+            background-color: #f9f9f9;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            overflow-y: auto;
+            max-height: 400px;
+        }
+        
+        .data-points {
+            margin-top: 1.5rem;
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        
+        th, td {
+            padding: 0.5rem;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .formula {
+            background-color: #f1f8ff;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Cambria Math', serif;
+            font-size: 1.1rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+        
+        .appendix {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 2rem;
+        }
+        
+        .math-detail {
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background-color: white;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #ddd;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        .point {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #3498db;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+        }
+        
+        .regression-line {
+            position: absolute;
+            height: 3px;
+            background-color: #e74c3c;
+            transform-origin: 0 0;
+        }
+        
+        .point.selected {
+            background-color: #e74c3c;
+            width: 14px;
+            height: 14px;
+            z-index: 10;
+        }
+        
+        .axis {
+            position: absolute;
+            background-color: #333;
+        }
+        
+        .x-axis {
+            width: 100%;
+            height: 2px;
+            bottom: 50px;
+            left: 0;
+        }
+        
+        .y-axis {
+            width: 2px;
+            height: 100%;
+            top: 0;
+            left: 50px;
+        }
+        
+        .axis-label {
+            position: absolute;
+            font-size: 0.9rem;
+            color: #333;
+        }
+        
+        .x-label {
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .y-label {
+            top: 50%;
+            left: 20px;
+            transform: translateY(-50%) rotate(-90deg);
+        }
+        
+        .tick {
+            position: absolute;
+            background-color: #333;
+        }
+        
+        .tick-label {
+            position: absolute;
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        @media (max-width: 768px) {
+            .visualization-container {
+                flex-direction: column;
+            }
+            
+            .controls {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Linear Regression Demystified</h1>
+        <p class="subtitle">From First Principles to Implementation Using Basic Mathematical Tools</p>
+    </header>
+    
+    <section class="introduction">
+        <h2>Introduction to Simple Linear Regression</h2>
+        <p>Simple linear regression is a fundamental statistical technique used to model the relationship between two variables: a predictor (independent) variable X and a response (dependent) variable Y. The goal is to find the best-fitting straight line through the data points, which can then be used for prediction and understanding relationships.</p>
+        <p>In this paper, we'll explore how basic mathematical tools—vectors, inner products, optimization, and systems of equations—provide the foundation for linear regression. We'll connect each statistical question in regression to its mathematical solution, and finally implement an interactive demonstration.</p>
+    </section>
+    
+    <section class="motivation-example">
+        <h2>A Motivating Example: Study Hours vs. Exam Scores</h2>
+        <p>Consider a common educational scenario: we want to understand how the number of hours a student studies affects their exam score. We collect data from 10 students:</p>
+        
+        <div class="data-points">
+            <table id="example-data">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Study Hours (X)</th>
+                        <th>Exam Score (Y)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>1</td><td>2</td><td>65</td></tr>
+                    <tr><td>2</td><td>3</td><td>70</td></tr>
+                    <tr><td>3</td><td>5</td><td>80</td></tr>
+                    <tr><td>4</td><td>7</td><td>85</td></tr>
+                    <tr><td>5</td><td>8</td><td>90</td></tr>
+                    <tr><td>6</td><td>10</td><td>95</td></tr>
+                    <tr><td>7</td><td>12</td><td>98</td></tr>
+                    <tr><td>8</td><td>1</td><td>60</td></tr>
+                    <tr><td>9</td><td>4</td><td>75</td></tr>
+                    <tr><td>10</td><td>6</td><td>82</td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <p>In a regression setting, we typically ask:</p>
+        <ol>
+            <li><strong>Is there a relationship?</strong> Does study time actually affect exam scores?</li>
+            <li><strong>How strong is the relationship?</strong> What proportion of score variation is explained by study time?</li>
+            <li><strong>What is the relationship?</strong> What is the equation of the best-fitting line?</li>
+            <li><strong>How accurate are predictions?</strong> How close do data points fall to the regression line?</li>
+        </ol>
+    </section>
+    
+    <section class="math-tools">
+        <h2>Mathematical Tools for Regression</h2>
+        
+        <h3>1. Summation Notation and Descriptive Statistics</h3>
+        <p>Before modeling, we need to summarize our data mathematically:</p>
+        <div class="formula">
+            Sample means: \(\bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i\), \(\bar{y} = \frac{1}{n}\sum_{i=1}^{n} y_i\)
+        </div>
+        <p>Summation notation (Σ) allows us to compactly express operations on all data points.</p>
+        
+        <h3>2. Vectors and Inner Products</h3>
+        <p>We can represent our data as vectors: \(\mathbf{x} = [x_1, x_2, ..., x_n]^T\) and \(\mathbf{y} = [y_1, y_2, ..., y_n]^T\).</p>
+        <p>The inner product (dot product) helps compute sums of products:</p>
+        <div class="formula">
+            \(\mathbf{x} \cdot \mathbf{y} = \sum_{i=1}^{n} x_i y_i\)
+        </div>
+        
+        <h3>3. Optimization via Partial Derivatives</h3>
+        <p>The regression line has the form \(y = \beta_0 + \beta_1 x\). We find the best parameters by minimizing the sum of squared errors (SSE):</p>
+        <div class="formula">
+            SSE = \(\sum_{i=1}^{n} (y_i - (\beta_0 + \beta_1 x_i))^2\)
+        </div>
+        <p>We take partial derivatives with respect to \(\beta_0\) and \(\beta_1\), set them to zero, and solve.</p>
+        
+        <h3>4. System of Linear Equations</h3>
+        <p>The partial derivatives give us a system of two equations with two unknowns:</p>
+        <div class="formula">
+            \(n\beta_0 + \beta_1\sum x_i = \sum y_i\)<br>
+            \(\beta_0\sum x_i + \beta_1\sum x_i^2 = \sum x_i y_i\)
+        </div>
+        <p>Solving this system yields the least squares estimates.</p>
+    </section>
+    
+    <section class="interactive-app">
+        <h2>Interactive Regression Demonstration</h2>
+        <p>Use the interactive tool below to explore how linear regression works. Add or adjust data points, and see how the regression line changes in real-time.</p>
+        
+        <div class="app-container">
+            <div class="controls">
+                <div class="control-group">
+                    <label for="dataset">Dataset:</label>
+                    <select id="dataset">
+                        <option value="study">Study Hours vs. Exam Scores</option>
+                        <option value="custom">Custom Data</option>
+                        <option value="random">Random Data</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label for="x-value">X Value:</label>
+                    <input type="number" id="x-value" min="0" max="20" step="0.5" value="5">
+                </div>
+                
+                <div class="control-group">
+                    <label for="y-value">Y Value:</label>
+                    <input type="number" id="y-value" min="0" max="100" step="1" value="80">
+                </div>
+                
+                <div class="control-group">
+                    <button id="add-point">Add Data Point</button>
+                </div>
+                
+                <div class="control-group">
+                    <button id="reset-data">Reset to Default</button>
+                </div>
+                
+                <div class="control-group">
+                    <button id="calculate-regression">Calculate Regression</button>
+                </div>
+            </div>
+            
+            <div class="visualization-container">
+                <div class="plot-area" id="regression-plot">
+                    <!-- Plot will be drawn here by JavaScript -->
+                </div>
+                
+                <div class="calculations" id="calculations">
+                    <h3>Regression Calculations</h3>
+                    <p id="regression-equation">Equation: Not calculated yet</p>
+                    <p id="r-squared">R²: --</p>
+                    <p id="correlation">Correlation (r): --</p>
+                    <div id="step-by-step">
+                        <p>Click "Calculate Regression" to see step-by-step calculations.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="data-points">
+                <h3>Current Data Points</h3>
+                <table id="data-table">
+                    <thead>
+                        <tr>
+                            <th>Point</th>
+                            <th>X</th>
+                            <th>Y</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="data-table-body">
+                        <!-- Data points will be added here dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+    
+    <section class="appendix">
+        <h2>Appendix: Mathematical Details</h2>
+        
+        <div class="math-detail">
+            <h3>1. Summation Notation</h3>
+            <p>The summation operator Σ represents the sum of a sequence of terms:</p>
+            <div class="formula">
+                \(\sum_{i=1}^{n} x_i = x_1 + x_2 + \cdots + x_n\)
+            </div>
+            <p>Key properties used in regression derivations:</p>
+            <div class="formula">
+                \(\sum_{i=1}^{n} (x_i + y_i) = \sum x_i + \sum y_i\)<br>
+                \(\sum_{i=1}^{n} c = n \cdot c\) (where c is constant)<br>
+                \(\sum_{i=1}^{n} (x_i - \bar{x}) = 0\)
+            </div>
+        </div>
+        
+        <div class="math-detail">
+            <h3>2. Vectors and Inner Products</h3>
+            <p>In ℝⁿ, vectors are ordered n-tuples of real numbers. The inner product (dot product) is defined as:</p>
+            <div class="formula">
+                \(\mathbf{a} \cdot \mathbf{b} = \sum_{i=1}^{n} a_i b_i\)
+            </div>
+            <p>This measures the alignment between two vectors. In regression, we frequently compute:</p>
+            <div class="formula">
+                \(\mathbf{x} \cdot \mathbf{y} = \sum x_i y_i\)<br>
+                \(\mathbf{x} \cdot \mathbf{x} = \sum x_i^2\)<br>
+                \(\mathbf{1} \cdot \mathbf{x} = \sum x_i\) (where \(\mathbf{1}\) is a vector of all ones)
+            </div>
+        </div>
+        
+        <div class="math-detail">
+            <h3>3. Optimization via Partial Derivatives</h3>
+            <p>To minimize SSE = \(\sum (y_i - (\beta_0 + \beta_1 x_i))^2\), we take partial derivatives:</p>
+            <div class="formula">
+                \(\frac{\partial \text{SSE}}{\partial \beta_0} = -2\sum (y_i - \beta_0 - \beta_1 x_i)\)<br>
+                \(\frac{\partial \text{SSE}}{\partial \beta_1} = -2\sum x_i(y_i - \beta_0 - \beta_1 x_i)\)
+            </div>
+            <p>Setting these to zero gives the "normal equations":</p>
+            <div class="formula">
+                \(\sum y_i = n\beta_0 + \beta_1\sum x_i\)<br>
+                \(\sum x_i y_i = \beta_0\sum x_i + \beta_1\sum x_i^2\)
+            </div>
+        </div>
+        
+        <div class="math-detail">
+            <h3>4. Solving the System of Equations</h3>
+            <p>From the normal equations, we can solve for \(\beta_1\) and \(\beta_0\):</p>
+            <div class="formula">
+                \(\beta_1 = \frac{n\sum x_i y_i - (\sum x_i)(\sum y_i)}{n\sum x_i^2 - (\sum x_i)^2} = \frac{\sum (x_i - \bar{x})(y_i - \bar{y})}{\sum (x_i - \bar{x})^2}\)<br>
+                \(\beta_0 = \bar{y} - \beta_1\bar{x}\)
+            </div>
+            <p>These are the least squares estimates that minimize SSE.</p>
+        </div>
+        
+        <div class="math-detail">
+            <h3>5. Correlation and R²</h3>
+            <p>The correlation coefficient r measures the strength of linear relationship:</p>
+            <div class="formula">
+                \(r = \frac{\sum (x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\sum (x_i - \bar{x})^2 \sum (y_i - \bar{y})^2}}\)
+            </div>
+            <p>R² (coefficient of determination) is the square of r and represents the proportion of variance in Y explained by X:</p>
+            <div class="formula">
+                \(R^2 = \frac{\text{SSR}}{\text{SST}} = 1 - \frac{\text{SSE}}{\text{SST}}\)
+            </div>
+            <p>where SST = \(\sum (y_i - \bar{y})^2\), SSR = \(\sum (\hat{y}_i - \bar{y})^2\), SSE = \(\sum (y_i - \hat{y}_i)^2\).</p>
+        </div>
+    </section>
+    
+    <footer>
+        <p>Interactive Linear Regression Teaching Tool | Created for Educational Purposes</p>
+        <p>Mathematical foundations: Vectors, Inner Products, Optimization, Summation Notation, Partial Derivatives, Systems of Equations</p>
+    </footer>
+    
+    <script>
+        // Data storage
+        let dataPoints = [
+            {x: 2, y: 65},
+            {x: 3, y: 70},
+            {x: 5, y: 80},
+            {x: 7, y: 85},
+            {x: 8, y: 90},
+            {x: 10, y: 95},
+            {x: 12, y: 98},
+            {x: 1, y: 60},
+            {x: 4, y: 75},
+            {x: 6, y: 82}
+        ];
+        
+        // Regression results
+        let regressionResults = {
+            beta0: null,
+            beta1: null,
+            rSquared: null,
+            correlation: null
+        };
+        
+        // Plot dimensions
+        const plotWidth = 800;
+        const plotHeight = 400;
+        const margin = {top: 30, right: 30, bottom: 50, left: 50};
+        const plotAreaWidth = plotWidth - margin.left - margin.right;
+        const plotAreaHeight = plotHeight - margin.top - margin.bottom;
+        
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            initializePlot();
+            updateDataTable();
+            attachEventListeners();
+            calculateRegression();
+        });
+        
+        function initializePlot() {
+            const plotArea = document.getElementById('regression-plot');
+            plotArea.innerHTML = '';
+            
+            // Create axes
+            const xAxis = document.createElement('div');
+            xAxis.className = 'axis x-axis';
+            plotArea.appendChild(xAxis);
+            
+            const yAxis = document.createElement('div');
+            yAxis.className = 'axis y-axis';
+            plotArea.appendChild(yAxis);
+            
+            // Axis labels
+            const xLabel = document.createElement('div');
+            xLabel.className = 'axis-label x-label';
+            xLabel.textContent = 'Study Hours (X)';
+            plotArea.appendChild(xLabel);
+            
+            const yLabel = document.createElement('div');
+            yLabel.className = 'axis-label y-label';
+            yLabel.textContent = 'Exam Score (Y)';
+            plotArea.appendChild(yLabel);
+            
+            // Add ticks and labels for X axis
+            for (let i = 0; i <= 20; i += 2) {
+                const tick = document.createElement('div');
+                tick.className = 'tick';
+                tick.style.width = '2px';
+                tick.style.height = '10px';
+                tick.style.bottom = '50px';
+                tick.style.left = `${margin.left + (i/20) * plotAreaWidth}px`;
+                plotArea.appendChild(tick);
+                
+                const tickLabel = document.createElement('div');
+                tickLabel.className = 'tick-label';
+                tickLabel.textContent = i.toString();
+                tickLabel.style.bottom = '30px';
+                tickLabel.style.left = `${margin.left + (i/20) * plotAreaWidth}px`;
+                tickLabel.style.transform = 'translateX(-50%)';
+                plotArea.appendChild(tickLabel);
+            }
+            
+            // Add ticks and labels for Y axis
+            for (let i = 0; i <= 100; i += 10) {
+                const tick = document.createElement('div');
+                tick.className = 'tick';
+                tick.style.width = '10px';
+                tick.style.height = '2px';
+                tick.style.top = `${margin.top + (1 - i/100) * plotAreaHeight}px`;
+                tick.style.left = `${margin.left}px`;
+                plotArea.appendChild(tick);
+                
+                const tickLabel = document.createElement('div');
+                tickLabel.className = 'tick-label';
+                tickLabel.textContent = i.toString();
+                tickLabel.style.top = `${margin.top + (1 - i/100) * plotAreaHeight}px`;
+                tickLabel.style.left = `${margin.left - 20}px`;
+                tickLabel.style.transform = 'translateY(-50%)';
+                plotArea.appendChild(tickLabel);
+            }
+            
+            // Plot data points
+            plotDataPoints();
+        }
+        
+        function plotDataPoints() {
+            const plotArea = document.getElementById('regression-plot');
+            
+            // Clear existing points (but keep axes)
+            const existingPoints = document.querySelectorAll('.point');
+            existingPoints.forEach(point => point.remove());
+            
+            // Find min and max values for scaling
+            const xValues = dataPoints.map(p => p.x);
+            const yValues = dataPoints.map(p => p.y);
+            const xMin = Math.min(...xValues);
+            const xMax = Math.max(...xValues);
+            const yMin = Math.min(...yValues);
+            const yMax = Math.max(...yValues);
+            
+            // Add some padding to the scale
+            const xRange = xMax - xMin || 1;
+            const yRange = yMax - yMin || 1;
+            const xScale = plotAreaWidth / 20; // Fixed scale for X (0-20)
+            const yScale = plotAreaHeight / 100; // Fixed scale for Y (0-100)
+            
+            // Plot each point
+            dataPoints.forEach((point, index) => {
+                const pointElement = document.createElement('div');
+                pointElement.className = 'point';
+                pointElement.dataset.index = index;
+                
+                // Convert data coordinates to pixel coordinates
+                const xPixel = margin.left + point.x * xScale;
+                const yPixel = margin.top + (100 - point.y) * yScale;
+                
+                pointElement.style.left = `${xPixel}px`;
+                pointElement.style.top = `${yPixel}px`;
+                
+                // Add click event to select point
+                pointElement.addEventListener('click', function() {
+                    document.querySelectorAll('.point').forEach(p => p.classList.remove('selected'));
+                    this.classList.add('selected');
+                    
+                    // Update input fields with selected point values
+                    document.getElementById('x-value').value = point.x;
+                    document.getElementById('y-value').value = point.y;
+                });
+                
+                plotArea.appendChild(pointElement);
+            });
+            
+            // Plot regression line if calculated
+            plotRegressionLine();
+        }
+        
+        function plotRegressionLine() {
+            // Clear existing regression line
+            const existingLine = document.querySelector('.regression-line');
+            if (existingLine) existingLine.remove();
+            
+            if (regressionResults.beta0 === null || regressionResults.beta1 === null) return;
+            
+            const plotArea = document.getElementById('regression-plot');
+            const line = document.createElement('div');
+            line.className = 'regression-line';
+            
+            const xScale = plotAreaWidth / 20;
+            const yScale = plotAreaHeight / 100;
+            
+            // Calculate line endpoints (x from 0 to 20)
+            const x1 = 0;
+            const y1 = regressionResults.beta0 + regressionResults.beta1 * x1;
+            const x2 = 20;
+            const y2 = regressionResults.beta0 + regressionResults.beta1 * x2;
+            
+            // Convert to pixel coordinates
+            const x1Pixel = margin.left + x1 * xScale;
+            const y1Pixel = margin.top + (100 - y1) * yScale;
+            const x2Pixel = margin.left + x2 * xScale;
+            const y2Pixel = margin.top + (100 - y2) * yScale;
+            
+            // Calculate line length and angle
+            const length = Math.sqrt(Math.pow(x2Pixel - x1Pixel, 2) + Math.pow(y2Pixel - y1Pixel, 2));
+            const angle = Math.atan2(y2Pixel - y1Pixel, x2Pixel - x1Pixel) * (180 / Math.PI);
+            
+            line.style.width = `${length}px`;
+            line.style.left = `${x1Pixel}px`;
+            line.style.top = `${y1Pixel}px`;
+            line.style.transform = `rotate(${angle}deg)`;
+            
+            plotArea.appendChild(line);
+        }
+        
+        function updateDataTable() {
+            const tableBody = document.getElementById('data-table-body');
+            tableBody.innerHTML = '';
+            
+            dataPoints.forEach((point, index) => {
+                const row = document.createElement('tr');
+                
+                const cell1 = document.createElement('td');
+                cell1.textContent = index + 1;
+                row.appendChild(cell1);
+                
+                const cell2 = document.createElement('td');
+                cell2.textContent = point.x;
+                row.appendChild(cell2);
+                
+                const cell3 = document.createElement('td');
+                cell3.textContent = point.y;
+                row.appendChild(cell3);
+                
+                const cell4 = document.createElement('td');
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Delete';
+                deleteButton.style.padding = '0.2rem 0.5rem';
+                deleteButton.style.fontSize = '0.8rem';
+                deleteButton.addEventListener('click', function() {
+                    deleteDataPoint(index);
+                });
+                cell4.appendChild(deleteButton);
+                row.appendChild(cell4);
+                
+                tableBody.appendChild(row);
+            });
+        }
+        
+        function attachEventListeners() {
+            // Add point button
+            document.getElementById('add-point').addEventListener('click', function() {
+                const xValue = parseFloat(document.getElementById('x-value').value);
+                const yValue = parseFloat(document.getElementById('y-value').value);
+                
+                if (!isNaN(xValue) && !isNaN(yValue)) {
+                    addDataPoint(xValue, yValue);
+                } else {
+                    alert('Please enter valid numbers for X and Y values.');
+                }
+            });
+            
+            // Reset data button
+            document.getElementById('reset-data').addEventListener('click', function() {
+                resetData();
+            });
+            
+            // Calculate regression button
+            document.getElementById('calculate-regression').addEventListener('click', function() {
+                calculateRegression();
+            });
+            
+            // Dataset selector
+            document.getElementById('dataset').addEventListener('change', function() {
+                switch(this.value) {
+                    case 'study':
+                        resetData();
+                        break;
+                    case 'custom':
+                        // Clear data for custom entry
+                        dataPoints = [];
+                        updateDataTable();
+                        plotDataPoints();
+                        clearRegressionResults();
+                        break;
+                    case 'random':
+                        generateRandomData();
+                        break;
+                }
+            });
+        }
+        
+        function addDataPoint(x, y) {
+            dataPoints.push({x, y});
+            updateDataTable();
+            plotDataPoints();
+            clearRegressionResults();
+        }
+        
+        function deleteDataPoint(index) {
+            dataPoints.splice(index, 1);
+            updateDataTable();
+            plotDataPoints();
+            calculateRegression(); // Recalculate regression
+        }
+        
+        function resetData() {
+            dataPoints = [
+                {x: 2, y: 65},
+                {x: 3, y: 70},
+                {x: 5, y: 80},
+                {x: 7, y: 85},
+                {x: 8, y: 90},
+                {x: 10, y: 95},
+                {x: 12, y: 98},
+                {x: 1, y: 60},
+                {x: 4, y: 75},
+                {x: 6, y: 82}
+            ];
+            
+            updateDataTable();
+            plotDataPoints();
+            calculateRegression();
+        }
+        
+        function generateRandomData() {
+            dataPoints = [];
+            for (let i = 0; i < 10; i++) {
+                const x = Math.floor(Math.random() * 15) + 1;
+                const y = 50 + Math.floor(Math.random() * 40) + x * 3 + (Math.random() * 10 - 5);
+                dataPoints.push({x, y});
+            }
+            
+            updateDataTable();
+            plotDataPoints();
+            calculateRegression();
+        }
+        
+        function clearRegressionResults() {
+            regressionResults.beta0 = null;
+            regressionResults.beta1 = null;
+            regressionResults.rSquared = null;
+            regressionResults.correlation = null;
+            
+            document.getElementById('regression-equation').textContent = 'Equation: Not calculated yet';
+            document.getElementById('r-squared').textContent = 'R²: --';
+            document.getElementById('correlation').textContent = 'Correlation (r): --';
+            
+            // Clear step-by-step calculations
+            document.getElementById('step-by-step').innerHTML = '<p>Click "Calculate Regression" to see step-by-step calculations.</p>';
+            
+            // Remove regression line from plot
+            const existingLine = document.querySelector('.regression-line');
+            if (existingLine) existingLine.remove();
+        }
+        
+        function calculateRegression() {
+            if (dataPoints.length < 2) {
+                alert('Need at least 2 data points to calculate regression.');
+                return;
+            }
+            
+            // Calculate sums
+            const n = dataPoints.length;
+            let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0, sumY2 = 0;
+            
+            dataPoints.forEach(point => {
+                sumX += point.x;
+                sumY += point.y;
+                sumXY += point.x * point.y;
+                sumX2 += point.x * point.x;
+                sumY2 += point.y * point.y;
+            });
+            
+            // Calculate means
+            const meanX = sumX / n;
+            const meanY = sumY / n;
+            
+            // Calculate beta1 (slope)
+            const numerator = n * sumXY - sumX * sumY;
+            const denominator = n * sumX2 - sumX * sumX;
+            const beta1 = numerator / denominator;
+            
+            // Calculate beta0 (intercept)
+            const beta0 = meanY - beta1 * meanX;
+            
+            // Calculate predicted values and residuals
+            let predictedY = [];
+            let residuals = [];
+            let SSE = 0; // Sum of Squared Errors
+            let SST = 0; // Total Sum of Squares
+            
+            dataPoints.forEach(point => {
+                const yPred = beta0 + beta1 * point.x;
+                predictedY.push(yPred);
+                
+                const residual = point.y - yPred;
+                residuals.push(residual);
+                
+                SSE += residual * residual;
+                SST += (point.y - meanY) * (point.y - meanY);
+            });
+            
+            // Calculate R²
+            const rSquared = 1 - (SSE / SST);
+            
+            // Calculate correlation
+            const correlation = beta1 * Math.sqrt(sumX2 / n - meanX * meanX) / Math.sqrt(sumY2 / n - meanY * meanY);
+            
+            // Store results
+            regressionResults.beta0 = beta0;
+            regressionResults.beta1 = beta1;
+            regressionResults.rSquared = rSquared;
+            regressionResults.correlation = correlation;
+            
+            // Update display
+            document.getElementById('regression-equation').textContent = 
+                `Equation: ŷ = ${beta0.toFixed(2)} + ${beta1.toFixed(2)}x`;
+            document.getElementById('r-squared').textContent = 
+                `R²: ${rSquared.toFixed(4)} (${(rSquared * 100).toFixed(1)}% of variance explained)`;
+            document.getElementById('correlation').textContent = 
+                `Correlation (r): ${correlation.toFixed(4)}`;
+            
+            // Show step-by-step calculations
+            const stepByStep = document.getElementById('step-by-step');
+            stepByStep.innerHTML = `
+                <h4>Step-by-Step Calculations:</h4>
+                <p><strong>1. Calculate sums:</strong></p>
+                <ul>
+                    <li>n = ${n}</li>
+                    <li>∑x = ${sumX.toFixed(2)}</li>
+                    <li>∑y = ${sumY.toFixed(2)}</li>
+                    <li>∑xy = ${sumXY.toFixed(2)}</li>
+                    <li>∑x² = ${sumX2.toFixed(2)}</li>
+                </ul>
+                <p><strong>2. Calculate means:</strong></p>
+                <ul>
+                    <li>x̄ = ${meanX.toFixed(2)}</li>
+                    <li>ȳ = ${meanY.toFixed(2)}</li>
+                </ul>
+                <p><strong>3. Calculate slope (β₁):</strong></p>
+                <p>β₁ = [n∑xy - ∑x∑y] / [n∑x² - (∑x)²]</p>
+                <p>β₁ = [${n}×${sumXY.toFixed(2)} - ${sumX.toFixed(2)}×${sumY.toFixed(2)}] / [${n}×${sumX2.toFixed(2)} - ${sumX.toFixed(2)}²]</p>
+                <p>β₁ = ${numerator.toFixed(2)} / ${denominator.toFixed(2)} = ${beta1.toFixed(4)}</p>
+                <p><strong>4. Calculate intercept (β₀):</strong></p>
+                <p>β₀ = ȳ - β₁x̄ = ${meanY.toFixed(2)} - ${beta1.toFixed(4)}×${meanX.toFixed(2)} = ${beta0.toFixed(4)}</p>
+                <p><strong>5. Calculate R²:</strong></p>
+                <p>SST = ∑(yᵢ - ȳ)² = ${SST.toFixed(2)}</p>
+                <p>SSE = ∑(yᵢ - ŷᵢ)² = ${SSE.toFixed(2)}</p>
+                <p>R² = 1 - SSE/SST = 1 - ${SSE.toFixed(2)}/${SST.toFixed(2)} = ${rSquared.toFixed(4)}</p>
+            `;
+            
+            // Plot the regression line
+            plotRegressionLine();
+        }
+    </script>
+</body>
+</html>
