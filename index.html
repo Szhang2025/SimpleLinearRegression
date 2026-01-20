@@ -467,8 +467,8 @@
             <h3>4. Solving the System of Equations</h3>
             <p>From the normal equations, we can solve for \(\beta_1\) and \(\beta_0\):</p>
             <div class="formula">
-                \(\beta_1 = \frac{n\sum x_i y_i - (\sum x_i)(\sum y_i)}{n\sum x_i^2 - (\sum x_i)^2} = \frac{\sum (x_i - x&#772;)(y_i - \bar{y})}{\sum (x_i - x̄)^2}\)<br>
-                \(\beta_0 = y&#772; - \beta_1x̄\)
+                \(\beta_1 = \frac{n\sum x_i y_i - (\sum x_i)(\sum y_i)}{n\sum x_i^2 - (\sum x_i)^2} = \frac{\sum (x_i - x̄)(y_i - \bar{y})}{\sum (x_i - x̄)^2}\)<br>
+                \(\beta_0 = ȳ - \beta_1x̄\)
             </div>
             <p>These are the least squares estimates that minimize SSE.</p>
         </div>
@@ -477,13 +477,13 @@
             <h3>5. Correlation and R²</h3>
             <p>The correlation coefficient r measures the strength of linear relationship:</p>
             <div class="formula">
-                \(r = \frac{\sum (x_i - x&#772;)(y_i - y&#772;)}{\sqrt{\sum (x_i - x&#772;)^2 \sum (y_i - y&#772;)^2}}\)
+                \(r = \frac{\sum (x_i - x̄)(y_i - ȳ)}{\sqrt{\sum (x_i - x̄)^2 \sum (y_i - ȳ)^2}}\)
             </div>
             <p>R² (coefficient of determination) is the square of r and represents the proportion of variance in Y explained by X:</p>
             <div class="formula">
                 \(R^2 = \frac{\text{SSR}}{\text{SST}} = 1 - \frac{\text{SSE}}{\text{SST}}\)
             </div>
-            <p>where SST = \(\sum (y_i - y&#772;)^2\), SSR = \(\sum (\hat{y}_i - y&#772;)^2\), SSE = \(\sum (y_i - y&#770;_i)^2\).</p>
+            <p>where SST = \(\sum (y_i - ȳ)^2\), SSR = \(\sum (\hat{y}_i - ȳ)^2\), SSE = \(\sum (y_i - ŷ_i)^2\).</p>
         </div>
     </section>
     
