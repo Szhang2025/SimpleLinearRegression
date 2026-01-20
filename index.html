@@ -467,8 +467,8 @@
             <h3>4. Solving the System of Equations</h3>
             <p>From the normal equations, we can solve for \(\beta_1\) and \(\beta_0\):</p>
             <div class="formula">
-                \(\beta_1 = \frac{n\sum x_i y_i - (\sum x_i)(\sum y_i)}{n\sum x_i^2 - (\sum x_i)^2} = \frac{\sum (x_i - \bar{x})(y_i - \bar{y})}{\sum (x_i - \bar{x})^2}\)<br>
-                \(\beta_0 = \bar{y} - \beta_1\bar{x}\)
+                \(\beta_1 = \frac{n\sum x_i y_i - (\sum x_i)(\sum y_i)}{n\sum x_i^2 - (\sum x_i)^2} = \frac{\sum (x_i - x&#772;)(y_i - \bar{y})}{\sum (x_i - x̄)^2}\)<br>
+                \(\beta_0 = y&#772; - \beta_1x̄\)
             </div>
             <p>These are the least squares estimates that minimize SSE.</p>
         </div>
@@ -477,13 +477,13 @@
             <h3>5. Correlation and R²</h3>
             <p>The correlation coefficient r measures the strength of linear relationship:</p>
             <div class="formula">
-                \(r = \frac{\sum (x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\sum (x_i - \bar{x})^2 \sum (y_i - \bar{y})^2}}\)
+                \(r = \frac{\sum (x_i - x&#772;)(y_i - y&#772;)}{\sqrt{\sum (x_i - x&#772;)^2 \sum (y_i - y&#772;)^2}}\)
             </div>
             <p>R² (coefficient of determination) is the square of r and represents the proportion of variance in Y explained by X:</p>
             <div class="formula">
                 \(R^2 = \frac{\text{SSR}}{\text{SST}} = 1 - \frac{\text{SSE}}{\text{SST}}\)
             </div>
-            <p>where SST = \(\sum (y_i - \bar{y})^2\), SSR = \(\sum (\hat{y}_i - \bar{y})^2\), SSE = \(\sum (y_i - \hat{y}_i)^2\).</p>
+            <p>where SST = \(\sum (y_i - y&#772;)^2\), SSR = \(\sum (\hat{y}_i - y&#772;)^2\), SSE = \(\sum (y_i - y&#770;_i)^2\).</p>
         </div>
     </section>
     
@@ -918,7 +918,7 @@
                 <p><strong>4. Calculate intercept (β₀):</strong></p>
                 <p>β₀ = ȳ - β₁x̄ = ${meanY.toFixed(2)} - ${beta1.toFixed(4)}×${meanX.toFixed(2)} = ${beta0.toFixed(4)}</p>
                 <p><strong>5. Calculate R²:</strong></p>
-                <p>SST = ∑(yᵢ - ȳ)² = ∑yᵢ<sup>2</sup> - ny&#772;<sup>2</sup> = ${SST.toFixed(2)}</p>
+                <p>SST = ∑(yᵢ - x&#772;)² = ∑yᵢ<sup>2</sup> - ny&#772;<sup>2</sup> = ${SST.toFixed(2)}</p>
                 <p>SSE = ∑(yᵢ - ŷᵢ)² = ${SSE.toFixed(2)}</p>
                 <p>R² = 1 - SSE/SST = 1 - ${SSE.toFixed(2)}/${SST.toFixed(2)} = ${rSquared.toFixed(4)}</p>
             `;
