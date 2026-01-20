@@ -345,39 +345,6 @@
         </ol>
     </section>
     
-    <section class="math-tools">
-        <h2>Mathematical Tools for Regression</h2>
-        
-        <h3>1. Summation Notation and Descriptive Statistics</h3>
-        <p>Before modeling, we need to summarize our data mathematically:</p>
-        <div class="formula">
-            Sample means: \(\bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i\), \(\bar{y} = \frac{1}{n}\sum_{i=1}^{n} y_i\)
-        </div>
-        <p>Summation notation (Σ) allows us to compactly express operations on all data points.</p>
-        
-        <h3>2. Vectors and Inner Products</h3>
-        <p>We can represent our data as vectors: \(\mathbf{x} = [x_1, x_2, ..., x_n]^T\) and \(\mathbf{y} = [y_1, y_2, ..., y_n]^T\).</p>
-        <p>The inner product (dot product) helps compute sums of products:</p>
-        <div class="formula">
-            \(\mathbf{x} \cdot \mathbf{y} = \sum_{i=1}^{n} x_i y_i\)
-        </div>
-        
-        <h3>3. Optimization via Partial Derivatives</h3>
-        <p>The regression line has the form \(y = \beta_0 + \beta_1 x\). We find the best parameters by minimizing the sum of squared errors (SSE):</p>
-        <div class="formula">
-            SSE = \(\sum_{i=1}^{n} (y_i - (\beta_0 + \beta_1 x_i))^2\)
-        </div>
-        <p>We take partial derivatives with respect to \(\beta_0\) and \(\beta_1\), set them to zero, and solve.</p>
-        
-        <h3>4. System of Linear Equations</h3>
-        <p>The partial derivatives give us a system of two equations with two unknowns:</p>
-        <div class="formula">
-            \(n\beta_0 + \beta_1\sum x_i = \sum y_i\)<br>
-            \(\beta_0\sum x_i + \beta_1\sum x_i^2 = \sum x_i y_i\)
-        </div>
-        <p>Solving this system yields the least squares estimates.</p>
-    </section>
-    
     <section class="interactive-app">
         <h2>Interactive Regression Demonstration</h2>
         <p>Use the interactive tool below to explore how linear regression works. Add or adjust data points, and see how the regression line changes in real-time.</p>
@@ -937,11 +904,12 @@
                     <li>∑y = ${sumY.toFixed(2)}</li>
                     <li>∑xy = ${sumXY.toFixed(2)}</li>
                     <li>∑x² = ${sumX2.toFixed(2)}</li>
+                    <li>∑y² = ${sumY2.toFixed(2)}</li>
                 </ul>
                 <p><strong>2. Calculate means:</strong></p>
                 <ul>
-                    <li>x̄ = ${meanX.toFixed(2)}</li>
-                    <li>ȳ = ${meanY.toFixed(2)}</li>
+                    <li>x&#772; = ${meanX.toFixed(2)}</li>
+                    <li>y&#772; = ${meanY.toFixed(2)}</li>
                 </ul>
                 <p><strong>3. Calculate slope (β₁):</strong></p>
                 <p>β₁ = [n∑xy - ∑x∑y] / [n∑x² - (∑x)²]</p>
@@ -950,7 +918,7 @@
                 <p><strong>4. Calculate intercept (β₀):</strong></p>
                 <p>β₀ = ȳ - β₁x̄ = ${meanY.toFixed(2)} - ${beta1.toFixed(4)}×${meanX.toFixed(2)} = ${beta0.toFixed(4)}</p>
                 <p><strong>5. Calculate R²:</strong></p>
-                <p>SST = ∑(yᵢ - ȳ)² = ${SST.toFixed(2)}</p>
+                <p>SST = ∑(yᵢ - ȳ)² = ∑yᵢ<sup>2</sup> - ny&#772;<sup>2</sup> = ${SST.toFixed(2)}</p>
                 <p>SSE = ∑(yᵢ - ŷᵢ)² = ${SSE.toFixed(2)}</p>
                 <p>R² = 1 - SSE/SST = 1 - ${SSE.toFixed(2)}/${SST.toFixed(2)} = ${rSquared.toFixed(4)}</p>
             `;
